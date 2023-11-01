@@ -6,7 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-//main 은 연결돼있어서 저기선 쓸필요없음. 
+
+//main 은 연결돼있어서 저기선 쓸필요없음.
+
 func main() {
 	r := gin.Default()
 	
