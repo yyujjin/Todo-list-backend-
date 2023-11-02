@@ -25,7 +25,7 @@ type todo struct {
 }
 
 type todoList struct {
-	todos []todo
+	todos []todo // 자료형 : 배열이라는 뜻? 근데 뒤에 todo는 왜 붙은거임 
 }
 
 // 1. todos를 리턴하는 메소드
