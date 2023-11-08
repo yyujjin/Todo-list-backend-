@@ -8,21 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//main 은 연결돼있어서 저기선 쓸필요없음.
+
 
 func main() {
 	r := gin.Default()
 	
-	r.GET("/ping", func (c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-
-	// todos -> todos 슬라이스에 있는 값을 전달
-	// ['todo1', 'todo2', 'todo3']
-	
-
 	
 	type todo struct {
 		Id int `json:"id"`
@@ -39,35 +29,43 @@ func main() {
 		c.JSON(200, todos)
 	}) 
 	
-	//5. post : 요소 추가 {id: 3, name: 'todo3'} => 언니가 원하는 형태
 	
 	r.POST("/todos", func (c *gin.Context) {
-		//append로 넣어줄때는 자료형(구조체)을 기입해야 컴퓨터가 알아먹음  ???
 			
 		var newTodo todo
-		//&이거 왜 쓰는지 모르겠고
+		//포인터 함수란 말 자체가 없다.
+		// 그냥 함수에 매개변수가 포인터다?
 		//newTodo변수는 그럼 처음엔 그냥 선언됐다가
 		//바디에 담긴 값을 변수에 저장하면 계속 값이 바뀌는 건가?
+		//변수는 함수가 실행될때만 살아있음. => 함수끝나면 newtodo 사라짐 
+		
+		//바디에 값이 잘 담겼으면 err = nil
+		//바디에 값이 안담겼으면 err = [!= nil] 이 상태가 된다. 
+		// 함수 만들때 이 사람이 그냥 이렇게 만들어 놨다.
 		if err := c.BindJSON(&newTodo); err != nil {
 			return
 		}
 
+		//이게 풀어 쓴거 
+		// err := c.BindJSON(&newTodo);
+		// if err != nil {
+		// 	return // 함수안에서 retrun 은 함수 종료 
+		// }
+
+ 
 		todos = append(todos,newTodo)
 		c.JSON(http.StatusCreated, newTodo )
 	}) 
 	 
 //:id를 클라이언트가 입력하면 string으로 값이 들어오는건가?????
 	r.GET("/todos/:id", func (c *gin.Context) {
-		//밑에 코드를 하는 이유는 ?'
-		//for range로 변수에 담긴 값고 비교해야 하는데
-		//todo구조체의 id필드는 string 이니까  ==>>int인데??
-		//클라이언트가 요청한 id값 int랑 자료형이 맞지않아 비교가 안돼서  ==>클라이언트가 요청한 값이 string아님??
-		//todo 필드 id값을 int로 바꿔주는 코드.  ==>>새로만든 id의 자료형이 string이니까 그걸 int로 바꿔주는 거 아님???
-		id,_ := strconv.Atoi (c.Param("id"))  //자료형이 string 이라서  "" 이 안에 쓴건가???
+	//get라우터를 만든사람이 :id 는 string으로 들어오도록 만들어 놨다.
+		
+		id,_ := strconv.Atoi (c.Param("id"))  //자료형이 string 이라서  "" 이 안에 쓴건가??? 키 값은 "" 안에 넣어주는게 법칙
 		for _, a := range todos {
 			if a.Id == id {
 				c.IndentedJSON(http.StatusOK, a)
-				return  // 근데 이 return 한 값이 어디가는거임?
+				return  
 			}
 		}
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
